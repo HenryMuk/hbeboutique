@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiFetch, ApiError } from '../../api/client';
 
 const Connexion = () => {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ const Connexion = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [visible, setVisible] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -28,35 +29,31 @@ const Connexion = () => {
     }
 
     setLoading(true);
-    const data = new FormData();
-    data.append('email', formData.email);
-    data.append('mdp', formData.password);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/utilisateur/connexion.php`, data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 7000
+      const response = await apiFetch('/utilisateur/connexion', {
+        method: 'POST',
+        auth: false,
+        body: { email: formData.email, password: formData.password }
       });
 
-      if (response.data.status === 'success') {
-        const { token, userId, username } = response.data;
-        localStorage.setItem('userToken', token);
-        localStorage.setItem('userId', userId.toString());
-        
-        navigate('/deconnexion', { state: { username } });
-      } else if (response.data.trim() === 'Banni') {
-        setError('Compte banni ! Vous ne pouvez pas vous connecter');
-      } else if (response.data.trim() === 'Inactif') {
-        setError('Compte non activé ! ');
-      } else if (response.data.trim() === 'ErrorMDP') {
-        setError('Mot de passe incorrect');
-      } else if (response.data.trim() === 'EmailInnexistant') {
-        setError('Cet email n\'est pas inscrit');
-      } else {
-        setError('Erreur lors de la connexion');
-      }
+      const { token, userId, username, role } = response;
+      localStorage.setItem('userToken', token);
+      localStorage.setItem('userId', userId.toString());
+      localStorage.setItem('username', username);
+      localStorage.setItem('role', role);
+
+      navigate('/accueil', { state: { username } });
     } catch (err) {
-      setError('Erreur de connexion au serveur');
+      if (err instanceof ApiError) {
+        if (err.code === 'BANNI') setError('Compte banni ! Vous ne pouvez pas vous connecter');
+        else if (err.code === 'INACTIF') setError('Compte non activé ! ');
+        else if (err.code === 'MDP_INVALIDE') setError('Mot de passe incorrect');
+        else if (err.code === 'EMAIL_INEXISTANT') setError('Cet email n\'est pas inscrit');
+        else setError('Erreur lors de la connexion');
+      } else {
+        setError('Erreur de connexion au serveur');
+      }
     } finally {
       setLoading(false);
     }
@@ -107,6 +104,9 @@ const Connexion = () => {
                 <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
+
+               
+
                 <input
                   type="password"
                   name="password"
@@ -115,7 +115,11 @@ const Connexion = () => {
                   className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                   placeholder="••••••••"
                 />
+                
+              
               </div>
+
+              
             </div>
 
             <button

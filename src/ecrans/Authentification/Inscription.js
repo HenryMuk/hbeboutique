@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiFetch, ApiError } from '../../api/client';
 
 const Inscription = () => {
   const navigate = useNavigate();
@@ -30,35 +30,26 @@ const Inscription = () => {
     }
 
     setLoading(true);
-    const data = new FormData();
-    data.append('email', formData.email);
-    data.append('username', formData.username);
-    data.append('mdp', formData.password);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/utilisateur/inscription.php`, data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 7000
+      await apiFetch('/utilisateur/inscription', {
+        method: 'POST',
+        auth: false,
+        body: { email: formData.email, username: formData.username, password: formData.password }
       });
 
-      if (response.data.status === 'success') {
-        setSuccess('Confirmation requise ! Vérifiez votre email pour le code OTP.');
-        setTimeout(() => {
-          navigate('/otp', { state: { email: formData.email, username: formData.username } });
-        }, 2000);
-      } else if (response.data.trim() === 'EmailExiste') {
-        setError('Cet email est déjà utilisé');
-        console.error('Réponse du serveur:', response.data);
-      } else if (response.data.trim() === 'UsernameExiste') {
-        setError('Ce nom d\'utilisateur est déjà pris');
-        console.error('Réponse du serveur:', response.data);
-      } else {
-        setError('Erreur lors de l\'inscription');
-        console.error('Réponse du serveur:', response.data);
-      }
+      setSuccess('Confirmation requise ! Vérifiez votre email pour le code OTP.');
+      setTimeout(() => {
+        navigate('/otp', { state: { email: formData.email, username: formData.username } });
+      }, 2000);
     } catch (err) {
-      setError('Erreur de connexion au serveur');
-      console.error(err);
+      if (err instanceof ApiError) {
+        if (err.code === 'EMAIL_EXISTS') setError('Cet email est déjà utilisé');
+        else if (err.code === 'USERNAME_EXISTS') setError('Ce nom d\'utilisateur est déjà pris');
+        else setError('Erreur lors de l\'inscription');
+      } else {
+        setError('Erreur de connexion au serveur');
+      }
     } finally {
       setLoading(false);
     }

@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS `commandes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `utilisateur_id` int(11) NOT NULL,
+  `produit_id` int(11) NOT NULL,
+  `quantite` int(11) NOT NULL DEFAULT 1,
+  `montant` decimal(10,2) NOT NULL,
+  `telephone` varchar(20) NOT NULL,
+  `reference` varchar(50) NOT NULL,
+  `order_number` varchar(100) DEFAULT NULL,
+  `statut` varchar(20) NOT NULL DEFAULT 'en_attente',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `reference` (`reference`),
+  KEY `utilisateur_id` (`utilisateur_id`),
+  KEY `produit_id` (`produit_id`),
+  KEY `order_number` (`order_number`),
+  CONSTRAINT `commandes_utilisateur_fk` FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateurs` (`id`),
+  CONSTRAINT `commandes_produit_fk` FOREIGN KEY (`produit_id`) REFERENCES `produits` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

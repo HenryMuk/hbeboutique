@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { apiFetch, ApiError } from '../../api/client';
 
 const OTP = () => {
   const navigate = useNavigate();
@@ -43,34 +43,32 @@ const OTP = () => {
     }
 
     setLoading(true);
-    const formData = new FormData();
-    formData.append('code', code);
-    formData.append('email', email);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/utilisateur/verifierOTP.php`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 7000
+      const response = await apiFetch('/utilisateur/verifier-otp', {
+        method: 'POST',
+        auth: false,
+        body: { email, code }
       });
 
-      if (response.data.status === 'success') {
-        const { token, userId } = response.data;
-        localStorage.setItem('userToken', token);
-        localStorage.setItem('userId', userId.toString());
-        
-        setSuccess('Vérification réussie ! Redirection...');
-        setTimeout(() => {
-          navigate('/deconnexion', { state: { username } });
-        }, 2000);
-      } else if (response.data.trim() === 'CodeInvalide') {
-        setError('Code invalide');
-      } else if (response.data.trim() === 'CodeExpire') {
-        setError('Le code a expiré. Veuillez renvoyer un nouveau code.');
-      } else {
-        setError('Erreur lors de la vérification');
-      }
+      const { token, userId, role } = response;
+      localStorage.setItem('userToken', token);
+      localStorage.setItem('userId', userId.toString());
+      localStorage.setItem('username', username);
+      localStorage.setItem('role', role);
+
+      setSuccess('Vérification réussie ! Redirection...');
+      setTimeout(() => {
+        navigate('/accueil', { state: { username } });
+      }, 2000);
     } catch (err) {
-      setError('Erreur de connexion au serveur');
+      if (err instanceof ApiError) {
+        if (err.code === 'CODE_INVALIDE') setError('Code invalide');
+        else if (err.code === 'CODE_EXPIRE') setError('Le code a expiré. Veuillez renvoyer un nouveau code.');
+        else setError('Erreur lors de la vérification');
+      } else {
+        setError('Erreur de connexion au serveur');
+      }
     } finally {
       setLoading(false);
     }
@@ -78,23 +76,18 @@ const OTP = () => {
 
   const handleResendCode = async () => {
     setLoading(true);
-    const formData = new FormData();
-    formData.append('email', email);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/utilisateur/renvoyerOTP.php`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 7000
+      await apiFetch('/utilisateur/renvoyer-otp', {
+        method: 'POST',
+        auth: false,
+        body: { email }
       });
 
-      if (response.data.status === 'success') {
-        setSuccess('Un nouveau code a été envoyé à votre email');
-        setTimeout(() => setSuccess(''), 3000);
-      } else {
-        setError('Erreur lors du renvoi du code');
-      }
+      setSuccess('Un nouveau code a été envoyé à votre email');
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('Erreur de connexion au serveur');
+      setError('Erreur lors du renvoi du code');
     } finally {
       setLoading(false);
     }

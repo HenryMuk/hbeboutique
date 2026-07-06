@@ -2,10 +2,16 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Connexion from './ecrans/Authentification/Connexion';
 import OTP from './ecrans/Authentification/OTP';
-import Deconnexion from './ecrans/Authentification/Deconnexion';
 import Inscription from './ecrans/Authentification/Inscription';
+import Accueil from './ecrans/Boutique/Accueil';
+import DetailProduit from './ecrans/Boutique/DetailProduit';
+import Panier from './ecrans/Boutique/Panier';
+import AdminLayout from './ecrans/Admin/AdminLayout';
+import AdminProduits from './ecrans/Admin/AdminProduits';
+import AdminUtilisateurs from './ecrans/Admin/AdminUtilisateurs';
+import { ToastProvider } from './contexts/ToastContext';
+import { PanierProvider } from './contexts/PanierContext';
 
-// Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('userToken');
   if (!token) {
@@ -14,24 +20,66 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+const AdminRoute = ({ children }) => {
+  const token = localStorage.getItem('userToken');
+  if (!token) {
+    return <Navigate to="/connexion" replace />;
+  }
+  if (localStorage.getItem('role') !== 'admin') {
+    return <Navigate to="/accueil" replace />;
+  }
+  return children;
+};
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/inscription" element={<Inscription />} />
-        <Route path="/connexion" element={<Connexion />} />
-        <Route path="/otp" element={<OTP />} />
-        <Route
-          path="/deconnexion"
-          element={
-            <ProtectedRoute>
-              <Deconnexion />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/" element={<Navigate to="/connexion" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <ToastProvider>
+      <PanierProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/inscription" element={<Inscription />} />
+            <Route path="/connexion" element={<Connexion />} />
+            <Route path="/otp" element={<OTP />} />
+            <Route
+              path="/accueil"
+              element={
+                <ProtectedRoute>
+                  <Accueil />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/produit/:id"
+              element={
+                <ProtectedRoute>
+                  <DetailProduit />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/panier"
+              element={
+                <ProtectedRoute>
+                  <Panier />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminLayout />
+                </AdminRoute>
+              }
+            >
+              <Route path="produits" element={<AdminProduits />} />
+              <Route path="utilisateurs" element={<AdminUtilisateurs />} />
+            </Route>
+            <Route path="/" element={<Navigate to="/connexion" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </PanierProvider>
+    </ToastProvider>
   );
 }
 
