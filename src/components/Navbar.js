@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { usePanier } from '../contexts/PanierContext';
+import { ROLES } from '../constants/roles';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -43,12 +44,12 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            {role === 'admin' && (
+            {role && role !== ROLES.CLIENT && (
               <Link
-                to="/admin/produits"
+                to="/admin"
                 className="px-3 py-2 text-sm bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 rounded-xl transition border border-purple-500/30"
               >
-                Admin
+                Espace pro
               </Link>
             )}
 

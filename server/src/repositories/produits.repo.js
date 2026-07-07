@@ -10,18 +10,18 @@ async function findById(id) {
   return rows[0] || null;
 }
 
-async function create({ nom, description, prix, imageUrl }) {
+async function create({ nom, description, prix, imageUrl, stock }) {
   const [result] = await pool.query(
-    'INSERT INTO produits (nom, description, prix, image_url) VALUES (?, ?, ?, ?)',
-    [nom, description, prix, imageUrl]
+    'INSERT INTO produits (nom, description, prix, image_url, stock) VALUES (?, ?, ?, ?, ?)',
+    [nom, description, prix, imageUrl, stock]
   );
   return result.insertId;
 }
 
-async function update(id, { nom, description, prix, imageUrl }) {
+async function update(id, { nom, description, prix, imageUrl, stock }) {
   const [result] = await pool.query(
-    'UPDATE produits SET nom = ?, description = ?, prix = ?, image_url = ? WHERE id = ?',
-    [nom, description, prix, imageUrl, id]
+    'UPDATE produits SET nom = ?, description = ?, prix = ?, image_url = ?, stock = ? WHERE id = ?',
+    [nom, description, prix, imageUrl, stock, id]
   );
   return result.affectedRows > 0;
 }
@@ -68,7 +68,7 @@ async function insertSignalement(produitId, utilisateurId, motif) {
 
 async function findAllSignalements() {
   const [rows] = await pool.query(
-    `SELECT s.id, s.motif, s.created_at, p.id AS produit_id, p.nom AS produit_nom,
+    `SELECT s.id, s.motif, s.statut, s.created_at, p.id AS produit_id, p.nom AS produit_nom,
             u.username, u.email
      FROM signalements s
      JOIN produits p ON p.id = s.produit_id
@@ -76,6 +76,11 @@ async function findAllSignalements() {
      ORDER BY s.created_at DESC`
   );
   return rows;
+}
+
+async function updateStatutSignalement(id, statut) {
+  const [result] = await pool.query('UPDATE signalements SET statut = ? WHERE id = ?', [statut, id]);
+  return result.affectedRows > 0;
 }
 
 async function deleteSignalement(id) {
@@ -95,5 +100,6 @@ module.exports = {
   deleteLike,
   insertSignalement,
   findAllSignalements,
+  updateStatutSignalement,
   deleteSignalement
 };

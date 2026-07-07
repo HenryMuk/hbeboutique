@@ -2,7 +2,7 @@ const pool = require('../db/pool');
 
 async function findByUtilisateur(utilisateurId) {
   const [rows] = await pool.query(
-    `SELECT pi.produit_id, pi.quantite, p.nom, p.description, p.prix, p.image_url
+    `SELECT pi.produit_id, pi.quantite, p.nom, p.description, p.prix, p.image_url, p.stock
      FROM panier_items pi
      JOIN produits p ON p.id = pi.produit_id
      WHERE pi.utilisateur_id = ?

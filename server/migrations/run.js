@@ -10,7 +10,10 @@ const files = [
   '004_alter_utilisateurs_role.sql',
   '005_recreate_commandes.sql',
   '006_create_panier_produit_likes_signalements.sql',
-  '007_seed_admin.sql'
+  '007_seed_admin.sql',
+  '008_add_stock_produits.sql',
+  '009_widen_role_utilisateurs.sql',
+  '010_add_statut_signalements.sql'
 ];
 
 async function tableExists(connection, tableName) {
@@ -57,6 +60,16 @@ async function main() {
         console.log('Compte admin déjà présent, seed ignoré.');
         continue;
       }
+    }
+
+    if (file === '008_add_stock_produits.sql' && (await columnExists(connection, 'produits', 'stock'))) {
+      console.log('Colonne stock déjà présente, migration ignorée.');
+      continue;
+    }
+
+    if (file === '010_add_statut_signalements.sql' && (await columnExists(connection, 'signalements', 'statut'))) {
+      console.log('Colonne statut déjà présente, migration ignorée.');
+      continue;
     }
 
     const sql = fs.readFileSync(path.join(__dirname, file), 'utf8');

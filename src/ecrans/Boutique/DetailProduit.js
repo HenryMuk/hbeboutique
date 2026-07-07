@@ -5,6 +5,7 @@ import { SkeletonLine } from '../../components/SkeletonCard';
 import { apiFetch } from '../../api/client';
 import { usePanier } from '../../contexts/PanierContext';
 import { useToast } from '../../contexts/ToastContext';
+import { resolveImageUrl } from '../../utils/media';
 
 function pickAleatoires(liste, n) {
   const copie = [...liste];
@@ -49,7 +50,10 @@ const DetailProduit = () => {
 
   const suggestions = useMemo(() => pickAleatoires(autresProduits, 4), [autresProduits]);
 
+  const enRupture = produit && produit.stock <= 0;
+
   const handleAjouterAuPanier = async () => {
+    if (enRupture) return;
     setAjoutEnCours(true);
     try {
       await addItem(id, quantite);
@@ -128,7 +132,11 @@ const DetailProduit = () => {
         </button>
 
         <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fade-in-up">
-          <img src={produit.image_url} alt={produit.nom} className="w-full h-80 md:h-full object-cover" />
+          <img
+            src={resolveImageUrl(produit.image_url)}
+            alt={produit.nom}
+            className="w-full h-80 md:h-full object-cover"
+          />
 
           <div className="p-8 space-y-4">
             <div className="flex items-start justify-between gap-4">
@@ -154,29 +162,34 @@ const DetailProduit = () => {
             <p className="text-2xl font-bold text-purple-300">
               {Number(produit.prix).toLocaleString('fr-FR')} CDF
             </p>
+            <p className={`text-sm font-medium ${enRupture ? 'text-red-300' : 'text-green-300'}`}>
+              {enRupture ? 'Rupture de stock' : `${produit.stock} en stock`}
+            </p>
 
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setQuantite((q) => Math.max(1, q - 1))}
-                  className="w-9 h-9 bg-white/10 rounded-lg text-white hover:bg-white/20 transition"
+                  disabled={enRupture}
+                  className="w-9 h-9 bg-white/10 rounded-lg text-white hover:bg-white/20 transition disabled:opacity-50"
                 >
                   -
                 </button>
                 <span className="text-white w-8 text-center">{quantite}</span>
                 <button
-                  onClick={() => setQuantite((q) => q + 1)}
-                  className="w-9 h-9 bg-white/10 rounded-lg text-white hover:bg-white/20 transition"
+                  onClick={() => setQuantite((q) => Math.min(produit.stock, q + 1))}
+                  disabled={enRupture}
+                  className="w-9 h-9 bg-white/10 rounded-lg text-white hover:bg-white/20 transition disabled:opacity-50"
                 >
                   +
                 </button>
               </div>
               <button
                 onClick={handleAjouterAuPanier}
-                disabled={ajoutEnCours}
+                disabled={ajoutEnCours || enRupture}
                 className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl hover:from-purple-600 hover:to-pink-600 transition disabled:opacity-50"
               >
-                {ajoutEnCours ? 'Ajout...' : 'Ajouter au panier'}
+                {enRupture ? 'Rupture de stock' : ajoutEnCours ? 'Ajout...' : 'Ajouter au panier'}
               </button>
             </div>
 
@@ -225,7 +238,11 @@ const DetailProduit = () => {
                   className="bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1 animate-fade-in-up"
                   style={{ animationDelay: `${index * 60}ms` }}
                 >
-                  <img src={suggestion.image_url} alt={suggestion.nom} className="h-28 w-full object-cover" />
+                  <img
+                    src={resolveImageUrl(suggestion.image_url)}
+                    alt={suggestion.nom}
+                    className="h-28 w-full object-cover"
+                  />
                   <div className="p-3">
                     <p className="text-white text-sm truncate">{suggestion.nom}</p>
                     <p className="text-purple-300 text-sm font-semibold">

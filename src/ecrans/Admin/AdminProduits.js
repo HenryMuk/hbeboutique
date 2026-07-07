@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { apiFetch } from '../../api/client';
 import { useToast } from '../../contexts/ToastContext';
+import { resolveImageUrl } from '../../utils/media';
 
-const FORM_VIDE = { nom: '', description: '', prix: '', imageUrl: '' };
+const FORM_VIDE = { nom: '', description: '', prix: '', stock: '' };
 
 const AdminProduits = () => {
   const { showToast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [produits, setProduits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formOuvert, setFormOuvert] = useState(false);
   const [editionId, setEditionId] = useState(null);
   const [form, setForm] = useState(FORM_VIDE);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
 
   const charger = () => {
     setLoading(true);
@@ -28,6 +33,8 @@ const AdminProduits = () => {
   const ouvrirCreation = () => {
     setEditionId(null);
     setForm(FORM_VIDE);
+    setImageFile(null);
+    setImagePreview('');
     setFormOuvert(true);
   };
 
@@ -37,19 +44,55 @@ const AdminProduits = () => {
       nom: produit.nom,
       description: produit.description,
       prix: produit.prix,
-      imageUrl: produit.image_url
+      stock: produit.stock
     });
+    setImageFile(null);
+    setImagePreview(resolveImageUrl(produit.image_url));
     setFormOuvert(true);
+  };
+
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (editId && produits.length > 0) {
+      const produit = produits.find((p) => String(p.id) === editId);
+      if (produit) {
+        ouvrirEdition(produit);
+      }
+      setSearchParams({}, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [produits]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file || null);
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!editionId && !imageFile) {
+      showToast("Veuillez sélectionner une image pour le produit", 'error');
+      return;
+    }
+
+    const data = new FormData();
+    data.append('nom', form.nom);
+    data.append('description', form.description);
+    data.append('prix', form.prix);
+    data.append('stock', form.stock);
+    if (imageFile) {
+      data.append('image', imageFile);
+    }
+
     try {
       if (editionId) {
-        await apiFetch(`/admin/produits/${editionId}`, { method: 'PUT', body: form });
+        await apiFetch(`/admin/produits/${editionId}`, { method: 'PUT', body: data });
         showToast('Produit modifié');
       } else {
-        await apiFetch('/admin/produits', { method: 'POST', body: form });
+        await apiFetch('/admin/produits', { method: 'POST', body: data });
         showToast('Produit créé');
       }
       setFormOuvert(false);
@@ -106,11 +149,29 @@ const AdminProduits = () => {
             />
           </div>
           <input
-            placeholder="URL de l'image"
-            value={form.imageUrl}
-            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+            required
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Quantité en stock"
+            value={form.stock}
+            onChange={(e) => setForm({ ...form, stock: e.target.value })}
             className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40"
           />
+          <div className="flex items-center gap-4">
+            {imagePreview && (
+              <img src={imagePreview} alt="Aperçu" className="w-16 h-16 object-cover rounded-lg border border-white/20" />
+            )}
+            <div className="flex-1">
+              <label className="block text-white/70 text-sm mb-1">Image du produit (depuis votre galerie)</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full text-white/80 text-sm file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-purple-500/30 file:text-white file:cursor-pointer"
+              />
+            </div>
+          </div>
           <textarea
             placeholder="Description"
             rows={3}
@@ -140,13 +201,14 @@ const AdminProduits = () => {
               <th className="p-4">Image</th>
               <th className="p-4">Nom</th>
               <th className="p-4">Prix</th>
+              <th className="p-4">Stock</th>
               <th className="p-4">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={4} className="p-4 text-white/50">
+                <td colSpan={5} className="p-4 text-white/50">
                   Chargement...
                 </td>
               </tr>
@@ -154,10 +216,23 @@ const AdminProduits = () => {
               produits.map((produit) => (
                 <tr key={produit.id} className="border-t border-white/10 hover:bg-white/5 transition">
                   <td className="p-4">
-                    <img src={produit.image_url} alt={produit.nom} className="w-12 h-12 object-cover rounded-lg" />
+                    <img
+                      src={resolveImageUrl(produit.image_url)}
+                      alt={produit.nom}
+                      className="w-12 h-12 object-cover rounded-lg"
+                    />
                   </td>
                   <td className="p-4 text-white">{produit.nom}</td>
                   <td className="p-4 text-purple-300">{Number(produit.prix).toLocaleString('fr-FR')} CDF</td>
+                  <td className="p-4">
+                    <span
+                      className={`px-2 py-1 rounded-lg text-xs ${
+                        produit.stock > 0 ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
+                      }`}
+                    >
+                      {produit.stock > 0 ? `${produit.stock} en stock` : 'Rupture'}
+                    </span>
+                  </td>
                   <td className="p-4 space-x-3">
                     <button onClick={() => ouvrirEdition(produit)} className="text-purple-300 hover:text-purple-200 transition">
                       Éditer

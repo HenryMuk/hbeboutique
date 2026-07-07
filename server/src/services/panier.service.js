@@ -17,12 +17,23 @@ async function ajouterAuPanier(utilisateurId, produitId, quantite) {
   if (!produit) {
     throw new ServiceError('PRODUIT_INTROUVABLE', 404);
   }
-  await panierRepo.upsertItem(utilisateurId, produitId, Number(quantite) || 1);
+  const delta = Number(quantite) || 1;
+  const items = await panierRepo.findByUtilisateur(utilisateurId);
+  const existant = items.find((item) => item.produit_id === Number(produitId));
+  const quantiteFinale = (existant ? existant.quantite : 0) + delta;
+  if (quantiteFinale > produit.stock) {
+    throw new ServiceError('STOCK_INSUFFISANT', 400);
+  }
+  await panierRepo.upsertItem(utilisateurId, produitId, delta);
 }
 
 async function modifierQuantite(utilisateurId, produitId, quantite) {
   if (Number(quantite) <= 0) {
     throw new ServiceError('QUANTITE_INVALIDE', 400);
+  }
+  const produit = await produitsRepo.findById(produitId);
+  if (produit && Number(quantite) > produit.stock) {
+    throw new ServiceError('STOCK_INSUFFISANT', 400);
   }
   const updated = await panierRepo.setQuantite(utilisateurId, produitId, Number(quantite));
   if (!updated) {

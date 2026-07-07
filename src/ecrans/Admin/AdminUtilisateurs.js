@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from '../../api/client';
 import { useToast } from '../../contexts/ToastContext';
+import { ROLES, ROLES_LIST, ROLE_LABELS } from '../../constants/roles';
 
 const AdminUtilisateurs = () => {
   const { showToast } = useToast();
@@ -31,11 +32,11 @@ const AdminUtilisateurs = () => {
     }
   };
 
-  const toggleRole = async (utilisateur) => {
-    const nouveauRole = utilisateur.role === 'admin' ? 'client' : 'admin';
+  const handleRoleChange = async (utilisateur, nouveauRole) => {
+    if (nouveauRole === utilisateur.role) return;
     try {
       await apiFetch(`/admin/utilisateurs/${utilisateur.id}`, { method: 'PATCH', body: { role: nouveauRole } });
-      showToast(`Rôle changé en ${nouveauRole}`);
+      showToast(`Rôle changé en ${ROLE_LABELS[nouveauRole]}`);
       charger();
     } catch (err) {
       showToast('Erreur lors de la mise à jour', 'error');
@@ -79,20 +80,23 @@ const AdminUtilisateurs = () => {
                     </span>
                   </td>
                   <td className="p-4">
-                    <span
-                      className={`px-2 py-1 rounded-lg text-xs ${
-                        utilisateur.role === 'admin' ? 'bg-purple-500/20 text-purple-300' : 'bg-white/10 text-white/60'
+                    <select
+                      value={utilisateur.role}
+                      onChange={(e) => handleRoleChange(utilisateur, e.target.value)}
+                      className={`px-2 py-1.5 rounded-lg text-xs bg-white/10 border border-white/20 text-white ${
+                        utilisateur.role === ROLES.ADMIN ? 'text-purple-300' : ''
                       }`}
                     >
-                      {utilisateur.role}
-                    </span>
+                      {ROLES_LIST.map((role) => (
+                        <option key={role} value={role} className="bg-slate-800 text-white">
+                          {ROLE_LABELS[role]}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="p-4 space-x-3">
                     <button onClick={() => toggleBan(utilisateur)} className="text-orange-300 hover:text-orange-200 transition">
                       {utilisateur.etat === 'Banni' ? 'Réactiver' : 'Bannir'}
-                    </button>
-                    <button onClick={() => toggleRole(utilisateur)} className="text-purple-300 hover:text-purple-200 transition">
-                      {utilisateur.role === 'admin' ? 'Retirer admin' : 'Rendre admin'}
                     </button>
                   </td>
                 </tr>

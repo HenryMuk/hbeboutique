@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { apiFetch } from '../../api/client';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -20,10 +21,11 @@ const AdminSignalements = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDismiss = async (id) => {
+  const toggleStatut = async (signalement) => {
+    const nouveauStatut = signalement.statut === 'traite' ? 'nouveau' : 'traite';
     try {
-      await apiFetch(`/admin/signalements/${id}`, { method: 'DELETE' });
-      showToast('Signalement traité');
+      await apiFetch(`/admin/signalements/${signalement.id}`, { method: 'PATCH', body: { statut: nouveauStatut } });
+      showToast(nouveauStatut === 'traite' ? 'Signalement marqué traité' : 'Signalement rouvert');
       charger();
     } catch (err) {
       showToast('Erreur lors du traitement', 'error');
@@ -42,19 +44,20 @@ const AdminSignalements = () => {
               <th className="p-4">Motif</th>
               <th className="p-4">Signalé par</th>
               <th className="p-4">Date</th>
+              <th className="p-4">Statut</th>
               <th className="p-4">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="p-4 text-white/50">
+                <td colSpan={6} className="p-4 text-white/50">
                   Chargement...
                 </td>
               </tr>
             ) : signalements.length === 0 ? (
               <tr>
-                <td colSpan={5} className="p-4 text-white/50">
+                <td colSpan={6} className="p-4 text-white/50">
                   Aucun signalement pour le moment.
                 </td>
               </tr>
@@ -71,11 +74,28 @@ const AdminSignalements = () => {
                     {new Date(signalement.created_at).toLocaleString('fr-FR')}
                   </td>
                   <td className="p-4">
+                    <span
+                      className={`px-2 py-1 rounded-lg text-xs ${
+                        signalement.statut === 'traite'
+                          ? 'bg-green-500/20 text-green-300'
+                          : 'bg-orange-500/20 text-orange-300'
+                      }`}
+                    >
+                      {signalement.statut === 'traite' ? 'Traité' : 'Nouveau'}
+                    </span>
+                  </td>
+                  <td className="p-4 space-x-3 whitespace-nowrap">
+                    <Link
+                      to={`/admin/produits?edit=${signalement.produit_id}`}
+                      className="text-purple-300 hover:text-purple-200 transition"
+                    >
+                      Voir l'article
+                    </Link>
                     <button
-                      onClick={() => handleDismiss(signalement.id)}
+                      onClick={() => toggleStatut(signalement)}
                       className="text-green-300 hover:text-green-200 transition"
                     >
-                      Marquer traité
+                      {signalement.statut === 'traite' ? 'Rouvrir' : 'Marquer traité'}
                     </button>
                   </td>
                 </tr>

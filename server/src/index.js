@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const config = require('./config/env');
 const utilisateurRoutes = require('./routes/utilisateur.routes');
 const produitsRoutes = require('./routes/produits.routes');
@@ -12,6 +13,7 @@ const app = express();
 
 app.use(cors({ origin: config.corsOrigin }));
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use('/api/utilisateur', utilisateurRoutes);
 app.use('/api/produits', produitsRoutes);

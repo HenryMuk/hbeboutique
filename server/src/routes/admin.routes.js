@@ -1,21 +1,34 @@
 const express = require('express');
 const controller = require('../controllers/admin.controller');
 const authMiddleware = require('../middleware/auth.middleware');
-const adminMiddleware = require('../middleware/admin.middleware');
+const { requireRole } = require('../middleware/role.middleware');
+const { uploadProduitImage } = require('../middleware/upload.middleware');
+const { ROLES } = require('../constants/roles');
 
 const router = express.Router();
 
-router.use(authMiddleware, adminMiddleware);
+router.use(authMiddleware);
 
-router.get('/produits', controller.listProduits);
-router.post('/produits', controller.createProduit);
-router.put('/produits/:id', controller.updateProduit);
-router.delete('/produits/:id', controller.deleteProduit);
+router.get('/produits', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller.listProduits);
+router.post(
+  '/produits',
+  requireRole(ROLES.GESTIONNAIRE_BOUTIQUE),
+  uploadProduitImage.single('image'),
+  controller.createProduit
+);
+router.put(
+  '/produits/:id',
+  requireRole(ROLES.GESTIONNAIRE_BOUTIQUE),
+  uploadProduitImage.single('image'),
+  controller.updateProduit
+);
+router.delete('/produits/:id', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller.deleteProduit);
 
-router.get('/utilisateurs', controller.listUtilisateurs);
-router.patch('/utilisateurs/:id', controller.updateUtilisateur);
+router.get('/utilisateurs', requireRole(ROLES.ADMIN), controller.listUtilisateurs);
+router.patch('/utilisateurs/:id', requireRole(ROLES.ADMIN), controller.updateUtilisateur);
 
-router.get('/signalements', controller.listSignalements);
-router.delete('/signalements/:id', controller.deleteSignalement);
+router.get('/signalements', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller.listSignalements);
+router.patch('/signalements/:id', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller.updateStatutSignalement);
+router.delete('/signalements/:id', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller.deleteSignalement);
 
 module.exports = router;

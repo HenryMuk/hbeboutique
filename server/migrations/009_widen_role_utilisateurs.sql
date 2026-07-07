@@ -1,0 +1,1 @@
+ALTER TABLE `utilisateurs` MODIFY COLUMN `role` VARCHAR(30) NOT NULL DEFAULT 'client';

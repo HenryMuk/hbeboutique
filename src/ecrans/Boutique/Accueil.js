@@ -5,6 +5,7 @@ import SkeletonCard from '../../components/SkeletonCard';
 import { apiFetch } from '../../api/client';
 import { usePanier } from '../../contexts/PanierContext';
 import { useToast } from '../../contexts/ToastContext';
+import { resolveImageUrl } from '../../utils/media';
 
 const Accueil = () => {
   const { addItem } = usePanier();
@@ -61,7 +62,7 @@ const Accueil = () => {
                 >
                   <div className="overflow-hidden h-48">
                     <img
-                      src={produit.image_url}
+                      src={resolveImageUrl(produit.image_url)}
                       alt={produit.nom}
                       className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -69,13 +70,17 @@ const Accueil = () => {
                   <div className="p-4 space-y-2">
                     <h3 className="text-white font-semibold truncate">{produit.nom}</h3>
                     <p className="text-white/50 text-sm line-clamp-2">{produit.description}</p>
+                    <p className={`text-xs font-medium ${produit.stock > 0 ? 'text-green-300' : 'text-red-300'}`}>
+                      {produit.stock > 0 ? `${produit.stock} en stock` : 'Rupture de stock'}
+                    </p>
                     <div className="flex items-center justify-between gap-2 pt-1">
                       <p className="text-purple-300 font-bold">{Number(produit.prix).toLocaleString('fr-FR')} CDF</p>
                       <button
                         onClick={(e) => handleAjouterAuPanier(e, produit.id)}
-                        className="px-3 py-1.5 text-sm bg-purple-500/20 hover:bg-purple-500/40 text-purple-200 rounded-lg transition"
+                        disabled={produit.stock <= 0}
+                        className="px-3 py-1.5 text-sm bg-purple-500/20 hover:bg-purple-500/40 text-purple-200 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
                       >
-                        + Panier
+                        {produit.stock > 0 ? '+ Panier' : 'Indisponible'}
                       </button>
                     </div>
                   </div>

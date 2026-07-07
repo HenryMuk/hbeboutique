@@ -9,7 +9,8 @@ export class ApiError extends Error {
 }
 
 export async function apiFetch(path, { method = 'GET', body, auth = true } = {}) {
-  const headers = { 'Content-Type': 'application/json' };
+  const isFormData = body instanceof FormData;
+  const headers = isFormData ? {} : { 'Content-Type': 'application/json' };
 
   if (auth) {
     const token = localStorage.getItem('userToken');
@@ -21,7 +22,7 @@ export async function apiFetch(path, { method = 'GET', body, auth = true } = {})
   const response = await fetch(`${BASE_URL}${path}`, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined
+    body: isFormData ? body : body ? JSON.stringify(body) : undefined
   });
 
   const data = await response.json().catch(() => null);

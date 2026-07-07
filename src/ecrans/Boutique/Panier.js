@@ -5,6 +5,7 @@ import { SkeletonLine } from '../../components/SkeletonCard';
 import { usePanier } from '../../contexts/PanierContext';
 import { useToast } from '../../contexts/ToastContext';
 import { apiFetch } from '../../api/client';
+import { resolveImageUrl } from '../../utils/media';
 
 const STATUT_LABELS = {
   en_attente: 'Confirmation de la commande en cours...',
@@ -133,10 +134,17 @@ const Panier = () => {
                   className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-4 flex items-center gap-4 animate-fade-in-up"
                   style={{ animationDelay: `${index * 60}ms` }}
                 >
-                  <img src={item.image_url} alt={item.nom} className="w-20 h-20 object-cover rounded-xl" />
+                  <img
+                    src={resolveImageUrl(item.image_url)}
+                    alt={item.nom}
+                    className="w-20 h-20 object-cover rounded-xl"
+                  />
                   <div className="flex-1">
                     <h3 className="text-white font-semibold">{item.nom}</h3>
                     <p className="text-purple-300 font-bold">{Number(item.prix).toLocaleString('fr-FR')} CDF</p>
+                    <p className={`text-xs ${item.quantite >= item.stock ? 'text-orange-300' : 'text-white/40'}`}>
+                      {item.stock} en stock
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -147,8 +155,9 @@ const Panier = () => {
                     </button>
                     <span className="text-white w-8 text-center">{item.quantite}</span>
                     <button
-                      onClick={() => handleUpdateQuantite(item.produit_id, item.quantite + 1)}
-                      className="w-8 h-8 bg-white/10 rounded-lg text-white hover:bg-white/20 transition"
+                      onClick={() => handleUpdateQuantite(item.produit_id, Math.min(item.stock, item.quantite + 1))}
+                      disabled={item.quantite >= item.stock}
+                      className="w-8 h-8 bg-white/10 rounded-lg text-white hover:bg-white/20 transition disabled:opacity-40"
                     >
                       +
                     </button>

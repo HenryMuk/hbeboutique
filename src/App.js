@@ -12,6 +12,7 @@ import AdminUtilisateurs from './ecrans/Admin/AdminUtilisateurs';
 import AdminSignalements from './ecrans/Admin/AdminSignalements';
 import { ToastProvider } from './contexts/ToastContext';
 import { PanierProvider } from './contexts/PanierContext';
+import { ROLES, STAFF_ROLES } from './constants/roles';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('userToken');
@@ -21,12 +22,13 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-const AdminRoute = ({ children }) => {
+const RoleRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('userToken');
   if (!token) {
     return <Navigate to="/connexion" replace />;
   }
-  if (localStorage.getItem('role') !== 'admin') {
+  const role = localStorage.getItem('role');
+  if (role !== ROLES.ADMIN && !allowedRoles.includes(role)) {
     return <Navigate to="/accueil" replace />;
   }
   return children;
@@ -68,14 +70,36 @@ function App() {
             <Route
               path="/admin"
               element={
-                <AdminRoute>
+                <RoleRoute allowedRoles={STAFF_ROLES}>
                   <AdminLayout />
-                </AdminRoute>
+                </RoleRoute>
               }
             >
-              <Route path="produits" element={<AdminProduits />} />
-              <Route path="utilisateurs" element={<AdminUtilisateurs />} />
-              <Route path="signalements" element={<AdminSignalements />} />
+              <Route index element={<Navigate to="produits" replace />} />
+              <Route
+                path="produits"
+                element={
+                  <RoleRoute allowedRoles={[ROLES.GESTIONNAIRE_BOUTIQUE]}>
+                    <AdminProduits />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="utilisateurs"
+                element={
+                  <RoleRoute allowedRoles={[ROLES.ADMIN]}>
+                    <AdminUtilisateurs />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="signalements"
+                element={
+                  <RoleRoute allowedRoles={[ROLES.GESTIONNAIRE_BOUTIQUE]}>
+                    <AdminSignalements />
+                  </RoleRoute>
+                }
+              />
             </Route>
             <Route path="/" element={<Navigate to="/connexion" replace />} />
           </Routes>
