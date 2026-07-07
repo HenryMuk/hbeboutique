@@ -66,6 +66,23 @@ async function insertSignalement(produitId, utilisateurId, motif) {
   ]);
 }
 
+async function findAllSignalements() {
+  const [rows] = await pool.query(
+    `SELECT s.id, s.motif, s.created_at, p.id AS produit_id, p.nom AS produit_nom,
+            u.username, u.email
+     FROM signalements s
+     JOIN produits p ON p.id = s.produit_id
+     JOIN utilisateurs u ON u.id = s.utilisateur_id
+     ORDER BY s.created_at DESC`
+  );
+  return rows;
+}
+
+async function deleteSignalement(id) {
+  const [result] = await pool.query('DELETE FROM signalements WHERE id = ?', [id]);
+  return result.affectedRows > 0;
+}
+
 module.exports = {
   findAll,
   findById,
@@ -76,5 +93,7 @@ module.exports = {
   isLikedBy,
   insertLike,
   deleteLike,
-  insertSignalement
+  insertSignalement,
+  findAllSignalements,
+  deleteSignalement
 };

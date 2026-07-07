@@ -68,11 +68,34 @@ async function updateUtilisateur(req, res, next) {
   }
 }
 
+async function listSignalements(req, res, next) {
+  try {
+    const signalements = await produitsRepo.findAllSignalements();
+    res.status(200).json(signalements);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteSignalement(req, res, next) {
+  try {
+    const removed = await produitsRepo.deleteSignalement(req.params.id);
+    if (!removed) {
+      throw new ServiceError('SIGNALEMENT_INTROUVABLE', 404);
+    }
+    res.status(200).json({ status: 'success' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   listProduits,
   createProduit,
   updateProduit,
   deleteProduit,
   listUtilisateurs,
-  updateUtilisateur
+  updateUtilisateur,
+  listSignalements,
+  deleteSignalement
 };

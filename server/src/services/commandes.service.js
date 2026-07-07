@@ -4,21 +4,23 @@ const commandesRepo = require('../repositories/commandes.repo');
 const subscribers = new Map();
 
 function subscribe(commandeId, res) {
-  if (!subscribers.has(commandeId)) {
-    subscribers.set(commandeId, new Set());
+  const key = String(commandeId);
+  if (!subscribers.has(key)) {
+    subscribers.set(key, new Set());
   }
-  subscribers.get(commandeId).add(res);
+  subscribers.get(key).add(res);
   return () => {
-    const set = subscribers.get(commandeId);
+    const set = subscribers.get(key);
     if (set) {
       set.delete(res);
-      if (set.size === 0) subscribers.delete(commandeId);
+      if (set.size === 0) subscribers.delete(key);
     }
   };
 }
 
 function publish(commandeId, statut) {
-  const set = subscribers.get(commandeId);
+  const key = String(commandeId);
+  const set = subscribers.get(key);
   if (!set) return;
   const payload = JSON.stringify({ commandeId, statut });
   const terminal = statut !== 'en_attente';
@@ -26,7 +28,7 @@ function publish(commandeId, statut) {
     res.write(`data: ${payload}\n\n`);
     if (terminal) res.end();
   }
-  if (terminal) subscribers.delete(commandeId);
+  if (terminal) subscribers.delete(key);
 }
 
 function sleep(ms) {

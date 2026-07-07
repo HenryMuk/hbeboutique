@@ -9,6 +9,7 @@ import Panier from './ecrans/Boutique/Panier';
 import AdminLayout from './ecrans/Admin/AdminLayout';
 import AdminProduits from './ecrans/Admin/AdminProduits';
 import AdminUtilisateurs from './ecrans/Admin/AdminUtilisateurs';
+import AdminSignalements from './ecrans/Admin/AdminSignalements';
 import { ToastProvider } from './contexts/ToastContext';
 import { PanierProvider } from './contexts/PanierContext';
 
@@ -74,6 +75,7 @@ function App() {
             >
               <Route path="produits" element={<AdminProduits />} />
               <Route path="utilisateurs" element={<AdminUtilisateurs />} />
+              <Route path="signalements" element={<AdminSignalements />} />
             </Route>
             <Route path="/" element={<Navigate to="/connexion" replace />} />
           </Routes>

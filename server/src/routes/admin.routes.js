@@ -15,4 +15,7 @@ router.delete('/produits/:id', controller.deleteProduit);
 router.get('/utilisateurs', controller.listUtilisateurs);
 router.patch('/utilisateurs/:id', controller.updateUtilisateur);
 
+router.get('/signalements', controller.listSignalements);
+router.delete('/signalements/:id', controller.deleteSignalement);
+
 module.exports = router;

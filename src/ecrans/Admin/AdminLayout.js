@@ -19,6 +19,9 @@ const AdminLayout = () => {
         <NavLink to="/admin/utilisateurs" className={linkClass}>
           Utilisateurs
         </NavLink>
+        <NavLink to="/admin/signalements" className={linkClass}>
+          Signalements
+        </NavLink>
         <button
           onClick={() => navigate('/accueil')}
           className="block w-full text-left px-4 py-3 rounded-xl text-white/50 hover:bg-white/10 hover:text-white transition mt-8"
