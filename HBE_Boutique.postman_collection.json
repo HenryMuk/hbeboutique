@@ -1,0 +1,488 @@
+{
+  "info": {
+    "_postman_id": "hbe-boutique-api-collection",
+    "name": "HBE Boutique - API Backend",
+    "description": "Collection complete pour tester l'API backend de HBE Boutique (dossier server/).\n\nA LIRE AVANT DE COMMENCER :\n1. Demarrez le serveur backend : `cd server` puis `npm start` (ou `npm run dev`). Par defaut il ecoute sur http://localhost:5000.\n2. Verifiez la variable de collection `baseUrl` (clic sur le nom de la collection > onglet Variables). Par defaut : http://localhost:5000/api\n3. Les requetes sont organisees en dossiers dans l'ordre logique d'un scenario de test : Authentification -> Produits -> Panier -> Commandes -> Admin.\n4. Beaucoup de requetes contiennent un script de test (onglet Tests) qui recupere automatiquement le token JWT, l'id du produit, l'id de la commande, etc. et les stocke dans les variables de collection. Executez les requetes dans l'ordre pour que tout s'enchaine automatiquement (ou utilisez le Collection Runner).\n5. Un compte cree via 'Inscription' a par defaut le role 'user'. Pour tester les routes /api/admin, il faut soit passer manuellement le role d'un compte a 'admin' directement en base de donnees (colonne `role` de la table `utilisateurs`), soit utiliser un compte deja admin.\n6. Le code OTP envoye par email peut aussi etre lu directement dans la colonne `otp_code` de la table `utilisateurs` si l'email n'arrive pas (ex: adresse de test factice, SMTP non configure). Notez que la connexion (`/connexion`) fonctionne meme SANS avoir verifie le code OTP : seul un compte 'Banni' ou sans etat est bloque.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api", "type": "string", "description": "URL de base de l'API. A adapter si le serveur tourne sur un autre port/host." },
+    { "key": "email", "value": "test.hbe@example.com", "type": "string", "description": "Email utilise pour les tests d'inscription/connexion. Remplacez par une adresse que vous controlez si vous voulez recevoir le vrai email OTP." },
+    { "key": "username", "value": "testeur1", "type": "string" },
+    { "key": "password", "value": "MotDePasse123!", "type": "string" },
+    { "key": "otpCode", "value": "", "type": "string", "description": "Code OTP a 6 chiffres recu par email (ou lu en base dans la colonne otp_code) apres l'inscription." },
+    { "key": "token", "value": "", "type": "string", "description": "Rempli automatiquement apres Connexion (Utilisateur) ou Verifier OTP." },
+    { "key": "userId", "value": "", "type": "string", "description": "Rempli automatiquement apres connexion utilisateur." },
+    { "key": "adminEmail", "value": "admin@hbeboutique.cd", "type": "string", "description": "Compte devant avoir role='admin' en base pour que les tests admin fonctionnent." },
+    { "key": "adminPassword", "value": "AdminHBE2026!", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string", "description": "Rempli automatiquement apres Connexion (Admin)." },
+    { "key": "produitId", "value": "", "type": "string", "description": "Rempli automatiquement avec l'id du premier produit renvoye par 'Lister les produits'." },
+    { "key": "produitAdminId", "value": "", "type": "string", "description": "Rempli automatiquement avec l'id du produit cree via 'Creer un produit (admin)'." },
+    { "key": "commandeId", "value": "", "type": "string", "description": "Rempli automatiquement apres 'Valider le panier (checkout)'." },
+    { "key": "utilisateurCibleId", "value": "", "type": "string", "description": "Id d'un utilisateur cible pour les tests d'administration (modif etat/role). Par defaut egal a userId apres connexion." },
+    { "key": "signalementId", "value": "", "type": "string", "description": "Rempli automatiquement avec l'id du premier signalement renvoye par 'Lister les signalements'." }
+  ],
+  "item": [
+    {
+      "name": "1. Authentification",
+      "item": [
+        {
+          "name": "Inscription",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/utilisateur/inscription", "host": ["{{baseUrl}}"], "path": ["utilisateur", "inscription"] },
+            "description": "Cree un compte. Renvoie 201 si succes. Erreurs possibles : 409 EMAIL_EXISTS, 409 USERNAME_EXISTS. Un email contenant un code OTP a 6 chiffres est envoye (ou consultable en base dans otp_code si l'envoi echoue)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 201 (cree)', function () {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verifier OTP",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"code\": \"{{otpCode}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/utilisateur/verifier-otp", "host": ["{{baseUrl}}"], "path": ["utilisateur", "verifier-otp"] },
+            "description": "Valide le code recu par email (variable {{otpCode}} a renseigner manuellement). Si valide, connecte directement l'utilisateur (renvoie un token) et marque le compte comme verifie. Erreurs : 400 CODE_INVALIDE, 410 CODE_EXPIRE."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('token', data.token);",
+                  "    pm.collectionVariables.set('userId', data.userId);",
+                  "    pm.collectionVariables.set('utilisateurCibleId', data.userId);",
+                  "    console.log('Token utilisateur mis a jour depuis Verifier OTP');",
+                  "}",
+                  "pm.test('Reponse contient un token si succes', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        pm.expect(pm.response.json()).to.have.property('token');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Renvoyer OTP",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/utilisateur/renvoyer-otp", "host": ["{{baseUrl}}"], "path": ["utilisateur", "renvoyer-otp"] },
+            "description": "Genere un nouveau code OTP et l'envoie par email (invalide l'ancien code). Erreur : 404 EMAIL_INEXISTANT."
+          }
+        },
+        {
+          "name": "Connexion (Utilisateur)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/utilisateur/connexion", "host": ["{{baseUrl}}"], "path": ["utilisateur", "connexion"] },
+            "description": "Connecte un utilisateur existant et renvoie un token JWT (valide 7 jours par defaut). Fonctionne meme sans avoir verifie l'OTP. Erreurs : 404 EMAIL_INEXISTANT, 401 MDP_INVALIDE, 403 BANNI, 403 INACTIF."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('token', data.token);",
+                  "    pm.collectionVariables.set('userId', data.userId);",
+                  "    pm.collectionVariables.set('utilisateurCibleId', data.userId);",
+                  "    console.log('Token utilisateur enregistre');",
+                  "}",
+                  "pm.test('Statut 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/utilisateur/connexion", "host": ["{{baseUrl}}"], "path": ["utilisateur", "connexion"] },
+            "description": "Connecte un compte ayant le role 'admin' en base et stocke son token separement (adminToken) pour ne pas ecraser le token utilisateur normal. Ce compte doit deja exister avec role='admin' dans la table utilisateurs."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('adminToken', data.token);",
+                  "    console.log('Token admin enregistre');",
+                  "}",
+                  "pm.test('Statut 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Le compte connecte a bien le role admin', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        pm.expect(pm.response.json().role).to.equal('admin');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Produits (catalogue public)",
+      "item": [
+        {
+          "name": "Lister les produits",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/produits", "host": ["{{baseUrl}}"], "path": ["produits"] },
+            "description": "Route publique, aucune authentification requise. Renvoie le tableau complet des produits."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 200', function () { pm.response.to.have.status(200); });",
+                  "const produits = pm.response.json();",
+                  "if (Array.isArray(produits) && produits.length > 0) {",
+                  "    pm.collectionVariables.set('produitId', produits[0].id);",
+                  "    console.log('produitId mis a jour :', produits[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detail d'un produit (avec statut like)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{token}}", "type": "string" } ] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/produits/{{produitId}}", "host": ["{{baseUrl}}"], "path": ["produits", "{{produitId}}"] },
+            "description": "Route publique a authentification FACULTATIVE : fonctionne sans token, mais si un token valide est fourni, la reponse inclut estLikePar (si l'utilisateur courant a like ce produit). Erreur : 404 PRODUIT_INTROUVABLE."
+          }
+        },
+        {
+          "name": "Liker / Unliker un produit",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{token}}", "type": "string" } ] },
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "" },
+            "url": { "raw": "{{baseUrl}}/produits/{{produitId}}/like", "host": ["{{baseUrl}}"], "path": ["produits", "{{produitId}}", "like"] },
+            "description": "Necessite d'etre connecte (Bearer token). Bascule le like : premier appel = like, second appel sur le meme produit = unlike. Renvoie { liked, likesCount }. Erreur : 401 UNAUTHORIZED si pas de token, 404 PRODUIT_INTROUVABLE."
+          }
+        },
+        {
+          "name": "Signaler un produit",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{token}}", "type": "string" } ] },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motif\": \"Contenu inapproprie / description trompeuse\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/produits/{{produitId}}/signaler", "host": ["{{baseUrl}}"], "path": ["produits", "{{produitId}}", "signaler"] },
+            "description": "Necessite d'etre connecte. Le motif est obligatoire et non vide. Erreurs : 400 MOTIF_REQUIS, 404 PRODUIT_INTROUVABLE, 401 UNAUTHORIZED."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Panier",
+      "item": [
+        {
+          "name": "Voir le panier",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{token}}", "type": "string" } ] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/panier", "host": ["{{baseUrl}}"], "path": ["panier"] },
+            "description": "Necessite d'etre connecte. Renvoie { items, total } pour l'utilisateur courant."
+          }
+        },
+        {
+          "name": "Ajouter un produit au panier",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{token}}", "type": "string" } ] },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"produitId\": {{produitId}},\n  \"quantite\": 2\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/panier", "host": ["{{baseUrl}}"], "path": ["panier"] },
+            "description": "Necessite d'etre connecte. Si le produit est deja dans le panier, la quantite est AJOUTEE (pas remplacee). Renvoie le panier complet mis a jour. Erreur : 404 PRODUIT_INTROUVABLE."
+          }
+        },
+        {
+          "name": "Modifier la quantite d'un article",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{token}}", "type": "string" } ] },
+            "method": "PATCH",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantite\": 3\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/panier/{{produitId}}", "host": ["{{baseUrl}}"], "path": ["panier", "{{produitId}}"] },
+            "description": "Necessite d'etre connecte. Fixe une quantite EXACTE (contrairement a l'ajout qui additionne). Erreurs : 400 QUANTITE_INVALIDE (si <= 0, utilisez plutot la suppression), 404 ARTICLE_INTROUVABLE."
+          }
+        },
+        {
+          "name": "Retirer un article du panier",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{token}}", "type": "string" } ] },
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/panier/{{produitId}}", "host": ["{{baseUrl}}"], "path": ["panier", "{{produitId}}"] },
+            "description": "Necessite d'etre connecte. Operation idempotente : ne renvoie pas d'erreur si l'article n'etait pas dans le panier."
+          }
+        },
+        {
+          "name": "Valider le panier (checkout)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{token}}", "type": "string" } ] },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telephone\": \"0600000000\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/panier/checkout", "host": ["{{baseUrl}}"], "path": ["panier", "checkout"] },
+            "description": "Necessite d'etre connecte et un panier non vide (l'ajouter au prealable avec 'Ajouter un produit au panier'). Transforme le panier en commande (statut initial 'en_attente'), vide le panier, et declenche en arriere-plan une confirmation automatique 1.5 a 2.5s plus tard (voir la requete SSE dans le dossier Commandes). Erreur : 400 PANIER_VIDE."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('commandeId', data.commandeId);",
+                  "    console.log('commandeId mis a jour :', data.commandeId);",
+                  "}",
+                  "pm.test('Statut 201 avec statut en_attente', function () {",
+                  "    if (pm.response.code === 201) {",
+                  "        pm.expect(pm.response.json().statut).to.equal('en_attente');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Commandes",
+      "item": [
+        {
+          "name": "Suivre le statut d'une commande (SSE)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/commandes/{{commandeId}}/statut/stream?token={{token}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["commandes", "{{commandeId}}", "statut", "stream"],
+              "query": [ { "key": "token", "value": "{{token}}" } ]
+            },
+            "description": "Flux Server-Sent Events (text/event-stream). Le token est passe en parametre d'URL car ce mode est concu pour l'API navigateur EventSource (qui ne permet pas d'en-tetes personnalises) ; un en-tete Authorization: Bearer fonctionnerait aussi.\n\nA executer juste apres 'Valider le panier (checkout)'. Dans Postman classique, la requete reste en attente puis se termine automatiquement au bout de 1.5 a 2.5 secondes (quand la commande passe au statut 'reussie'), affichant dans le corps de reponse brut une ou deux lignes 'data: {...}'. Ce n'est pas un vrai flux continu affiche en direct dans Postman (contrairement a un navigateur), mais le contenu recu est identique."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Administration - Produits",
+      "item": [
+        {
+          "name": "Lister les produits (admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{adminToken}}", "type": "string" } ] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/admin/produits", "host": ["{{baseUrl}}"], "path": ["admin", "produits"] },
+            "description": "Necessite un token dont le compte a le role 'admin'. Erreurs : 401 UNAUTHORIZED (pas connecte), 403 FORBIDDEN (connecte mais pas admin)."
+          }
+        },
+        {
+          "name": "Creer un produit",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{adminToken}}", "type": "string" } ] },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Produit de test Postman\",\n  \"description\": \"Cree automatiquement depuis la collection Postman\",\n  \"prix\": 19.99,\n  \"imageUrl\": \"https://via.placeholder.com/300\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/produits", "host": ["{{baseUrl}}"], "path": ["admin", "produits"] },
+            "description": "Cree un nouveau produit. Renvoie { id }."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('produitAdminId', data.id);",
+                  "    console.log('produitAdminId mis a jour :', data.id);",
+                  "}",
+                  "pm.test('Statut 201', function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier un produit",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{adminToken}}", "type": "string" } ] },
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Produit de test Postman (modifie)\",\n  \"description\": \"Description mise a jour\",\n  \"prix\": 24.99,\n  \"imageUrl\": \"https://via.placeholder.com/300\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/produits/{{produitAdminId}}", "host": ["{{baseUrl}}"], "path": ["admin", "produits", "{{produitAdminId}}"] },
+            "description": "Remplace l'integralite des champs du produit vise par {{produitAdminId}} (cree juste avant). Erreur : 404 PRODUIT_INTROUVABLE."
+          }
+        },
+        {
+          "name": "Supprimer un produit",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{adminToken}}", "type": "string" } ] },
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/admin/produits/{{produitAdminId}}", "host": ["{{baseUrl}}"], "path": ["admin", "produits", "{{produitAdminId}}"] },
+            "description": "Supprime le produit de test cree plus haut. Erreur : 404 PRODUIT_INTROUVABLE."
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Administration - Utilisateurs",
+      "item": [
+        {
+          "name": "Lister les utilisateurs",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{adminToken}}", "type": "string" } ] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/admin/utilisateurs", "host": ["{{baseUrl}}"], "path": ["admin", "utilisateurs"] },
+            "description": "Liste tous les comptes (sans les mots de passe)."
+          }
+        },
+        {
+          "name": "Modifier etat / role d'un utilisateur",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{adminToken}}", "type": "string" } ] },
+            "method": "PATCH",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"etat\": \"Actif\",\n  \"role\": \"user\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/utilisateurs/{{utilisateurCibleId}}", "host": ["{{baseUrl}}"], "path": ["admin", "utilisateurs", "{{utilisateurCibleId}}"] },
+            "description": "Modifie l'etat (ex: 'Actif' / 'Banni') et/ou le role (ex: 'user' / 'admin') d'un utilisateur. Les deux champs sont facultatifs (seuls ceux fournis sont modifies). ATTENTION : par defaut {{utilisateurCibleId}} pointe vers le compte utilisateur normal cree/connecte plus haut ; changez la valeur si vous voulez cibler un autre compte. Erreur : 404 UTILISATEUR_INTROUVABLE."
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Administration - Signalements",
+      "item": [
+        {
+          "name": "Lister les signalements",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{adminToken}}", "type": "string" } ] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/admin/signalements", "host": ["{{baseUrl}}"], "path": ["admin", "signalements"] },
+            "description": "Liste tous les signalements de produits avec le detail produit + utilisateur signaleur."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 200', function () { pm.response.to.have.status(200); });",
+                  "const signalements = pm.response.json();",
+                  "if (Array.isArray(signalements) && signalements.length > 0) {",
+                  "    pm.collectionVariables.set('signalementId', signalements[0].id);",
+                  "    console.log('signalementId mis a jour :', signalements[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Supprimer un signalement",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [ { "key": "token", "value": "{{adminToken}}", "type": "string" } ] },
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/admin/signalements/{{signalementId}}", "host": ["{{baseUrl}}"], "path": ["admin", "signalements", "{{signalementId}}"] },
+            "description": "Supprime (traite) le signalement vise par {{signalementId}} (rempli automatiquement par 'Lister les signalements'). Erreur : 404 SIGNALEMENT_INTROUVABLE."
+          }
+        }
+      ]
+    }
+  ]
+}
