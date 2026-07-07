@@ -1,6 +1,7 @@
 const produitsRepo = require('../repositories/produits.repo');
 const utilisateursRepo = require('../repositories/utilisateurs.repo');
 const commandesService = require('../services/commandes.service');
+const livraisonsService = require('../services/livraisons.service');
 const { ServiceError } = require('../services/errors');
 const { ROLES_LIST } = require('../constants/roles');
 
@@ -161,6 +162,70 @@ async function listPaiements(req, res, next) {
   }
 }
 
+async function listCommandesAExpedier(req, res, next) {
+  try {
+    const commandes = await livraisonsService.listCommandesAExpedier();
+    res.status(200).json(commandes);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function listLivreurs(req, res, next) {
+  try {
+    const livreurs = await livraisonsService.listLivreurs();
+    res.status(200).json(livreurs);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function attribuerLivreur(req, res, next) {
+  try {
+    const { commandeId, livreurId } = req.body;
+    const result = await livraisonsService.attribuerLivreur(commandeId, livreurId);
+    res.status(201).json({ status: 'success', ...result });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function listToutesLivraisons(req, res, next) {
+  try {
+    const livraisons = await livraisonsService.listToutesLivraisons();
+    res.status(200).json(livraisons);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function listMesLivraisons(req, res, next) {
+  try {
+    const livraisons = await livraisonsService.listMesLivraisons(req.user.id);
+    res.status(200).json(livraisons);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function marquerLivraisonEnCours(req, res, next) {
+  try {
+    await livraisonsService.marquerEnCours(req.params.id, req.user);
+    res.status(200).json({ status: 'success' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function marquerLivraisonLivree(req, res, next) {
+  try {
+    await livraisonsService.marquerLivree(req.params.id, req.user);
+    res.status(200).json({ status: 'success' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   listProduits,
   createProduit,
@@ -174,5 +239,12 @@ module.exports = {
   listCommandesEnAttente,
   validerCommande,
   rejeterCommande,
-  listPaiements
+  listPaiements,
+  listCommandesAExpedier,
+  listLivreurs,
+  attribuerLivreur,
+  listToutesLivraisons,
+  listMesLivraisons,
+  marquerLivraisonEnCours,
+  marquerLivraisonLivree
 };

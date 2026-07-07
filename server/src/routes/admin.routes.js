@@ -37,4 +37,12 @@ router.patch('/commandes/:id/rejeter', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE),
 
 router.get('/paiements', requireRole(ROLES.CAISSIER), controller.listPaiements);
 
+router.get('/livraisons/a-expedier', requireRole(ROLES.ENTREPOT), controller.listCommandesAExpedier);
+router.get('/livraisons/livreurs', requireRole(ROLES.ENTREPOT), controller.listLivreurs);
+router.post('/livraisons', requireRole(ROLES.ENTREPOT), controller.attribuerLivreur);
+router.get('/livraisons', requireRole(ROLES.ENTREPOT, ROLES.GESTIONNAIRE_BOUTIQUE), controller.listToutesLivraisons);
+router.get('/livraisons/mes-livraisons', requireRole(ROLES.LIVRAISON), controller.listMesLivraisons);
+router.patch('/livraisons/:id/en-cours', requireRole(ROLES.LIVRAISON), controller.marquerLivraisonEnCours);
+router.patch('/livraisons/:id/livree', requireRole(ROLES.LIVRAISON), controller.marquerLivraisonLivree);
+
 module.exports = router;

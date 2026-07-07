@@ -9,14 +9,18 @@ const STATUT_LABELS = {
   en_attente_paiement: 'Paiement en cours',
   en_attente_validation: 'En attente de validation',
   validee: 'Validée',
-  rejetee: 'Refusée'
+  rejetee: 'Refusée',
+  expediee: 'Expédiée',
+  livree: 'Livrée'
 };
 
 const STATUT_COLORS = {
   en_attente_paiement: 'bg-white/10 text-white/60',
   en_attente_validation: 'bg-orange-500/20 text-orange-300',
   validee: 'bg-green-500/20 text-green-300',
-  rejetee: 'bg-red-500/20 text-red-300'
+  rejetee: 'bg-red-500/20 text-red-300',
+  expediee: 'bg-blue-500/20 text-blue-300',
+  livree: 'bg-green-500/20 text-green-300'
 };
 
 const MesCommandes = () => {

@@ -13,6 +13,9 @@ import AdminUtilisateurs from './ecrans/Admin/AdminUtilisateurs';
 import AdminSignalements from './ecrans/Admin/AdminSignalements';
 import AdminCommandesValidation from './ecrans/Admin/AdminCommandesValidation';
 import AdminPaiements from './ecrans/Admin/AdminPaiements';
+import AdminEntrepot from './ecrans/Admin/AdminEntrepot';
+import AdminLivraisons from './ecrans/Admin/AdminLivraisons';
+import AdminSuiviLivraisons from './ecrans/Admin/AdminSuiviLivraisons';
 import { ToastProvider } from './contexts/ToastContext';
 import { PanierProvider } from './contexts/PanierContext';
 import { ROLES, STAFF_ROLES } from './constants/roles';
@@ -28,6 +31,8 @@ const ProtectedRoute = ({ children }) => {
 const AdminIndexRedirect = () => {
   const role = localStorage.getItem('role');
   if (role === ROLES.CAISSIER) return <Navigate to="paiements" replace />;
+  if (role === ROLES.ENTREPOT) return <Navigate to="entrepot" replace />;
+  if (role === ROLES.LIVRAISON) return <Navigate to="livraisons" replace />;
   if (role === ROLES.GESTIONNAIRE_BOUTIQUE || role === ROLES.ADMIN) return <Navigate to="produits" replace />;
   return <Navigate to="/accueil" replace />;
 };
@@ -131,6 +136,30 @@ function App() {
                 element={
                   <RoleRoute allowedRoles={[ROLES.CAISSIER]}>
                     <AdminPaiements />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="entrepot"
+                element={
+                  <RoleRoute allowedRoles={[ROLES.ENTREPOT]}>
+                    <AdminEntrepot />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="livraisons"
+                element={
+                  <RoleRoute allowedRoles={[ROLES.LIVRAISON]}>
+                    <AdminLivraisons />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="suivi-livraisons"
+                element={
+                  <RoleRoute allowedRoles={[ROLES.GESTIONNAIRE_BOUTIQUE]}>
+                    <AdminSuiviLivraisons />
                   </RoleRoute>
                 }
               />

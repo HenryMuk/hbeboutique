@@ -10,8 +10,11 @@ const linkClass = ({ isActive }) =>
 const NAV_ITEMS = [
   { to: '/admin/produits', label: 'Produits', roles: [ROLES.GESTIONNAIRE_BOUTIQUE] },
   { to: '/admin/commandes', label: 'Commandes à valider', roles: [ROLES.GESTIONNAIRE_BOUTIQUE] },
+  { to: '/admin/suivi-livraisons', label: 'Suivi des livraisons', roles: [ROLES.GESTIONNAIRE_BOUTIQUE] },
   { to: '/admin/signalements', label: 'Signalements', roles: [ROLES.GESTIONNAIRE_BOUTIQUE] },
   { to: '/admin/paiements', label: 'Paiements', roles: [ROLES.CAISSIER] },
+  { to: '/admin/entrepot', label: 'Entrepôt', roles: [ROLES.ENTREPOT] },
+  { to: '/admin/livraisons', label: 'Mes livraisons', roles: [ROLES.LIVRAISON] },
   { to: '/admin/utilisateurs', label: 'Utilisateurs & rôles', roles: [ROLES.ADMIN] }
 ];
 
