@@ -13,7 +13,9 @@ const files = [
   '007_seed_admin.sql',
   '008_add_stock_produits.sql',
   '009_widen_role_utilisateurs.sql',
-  '010_add_statut_signalements.sql'
+  '010_add_statut_signalements.sql',
+  '011_widen_statut_commandes.sql',
+  '012_create_factures.sql'
 ];
 
 async function tableExists(connection, tableName) {

@@ -31,4 +31,10 @@ router.get('/signalements', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller
 router.patch('/signalements/:id', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller.updateStatutSignalement);
 router.delete('/signalements/:id', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller.deleteSignalement);
 
+router.get('/commandes', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller.listCommandesEnAttente);
+router.patch('/commandes/:id/valider', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller.validerCommande);
+router.patch('/commandes/:id/rejeter', requireRole(ROLES.GESTIONNAIRE_BOUTIQUE), controller.rejeterCommande);
+
+router.get('/paiements', requireRole(ROLES.CAISSIER), controller.listPaiements);
+
 module.exports = router;

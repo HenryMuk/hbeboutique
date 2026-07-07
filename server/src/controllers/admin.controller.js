@@ -1,5 +1,6 @@
 const produitsRepo = require('../repositories/produits.repo');
 const utilisateursRepo = require('../repositories/utilisateurs.repo');
+const commandesService = require('../services/commandes.service');
 const { ServiceError } = require('../services/errors');
 const { ROLES_LIST } = require('../constants/roles');
 
@@ -124,6 +125,42 @@ async function deleteSignalement(req, res, next) {
   }
 }
 
+async function listCommandesEnAttente(req, res, next) {
+  try {
+    const commandes = await commandesService.listEnAttenteValidation();
+    res.status(200).json(commandes);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function validerCommande(req, res, next) {
+  try {
+    const facture = await commandesService.validerCommande(req.params.id);
+    res.status(200).json({ status: 'success', facture });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function rejeterCommande(req, res, next) {
+  try {
+    await commandesService.rejeterCommande(req.params.id);
+    res.status(200).json({ status: 'success' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function listPaiements(req, res, next) {
+  try {
+    const paiements = await commandesService.listPaiements();
+    res.status(200).json(paiements);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   listProduits,
   createProduit,
@@ -133,5 +170,9 @@ module.exports = {
   updateUtilisateur,
   listSignalements,
   updateStatutSignalement,
-  deleteSignalement
+  deleteSignalement,
+  listCommandesEnAttente,
+  validerCommande,
+  rejeterCommande,
+  listPaiements
 };

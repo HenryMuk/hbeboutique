@@ -8,9 +8,10 @@ import { apiFetch } from '../../api/client';
 import { resolveImageUrl } from '../../utils/media';
 
 const STATUT_LABELS = {
-  en_attente: 'Confirmation de la commande en cours...',
-  reussie: 'Commande confirmée ! Merci pour votre achat.',
-  echouee: 'La commande a échoué. Vous pouvez réessayer.'
+  en_attente_paiement: 'Confirmation du paiement en cours...',
+  en_attente_validation: 'Paiement confirmé. En attente de validation par la boutique...',
+  validee: 'Commande validée ! Une facture a été générée.',
+  rejetee: 'Commande refusée (stock insuffisant ou refus de la boutique).'
 };
 
 const Panier = () => {
@@ -40,11 +41,9 @@ const Panier = () => {
     source.onmessage = (event) => {
       const data = JSON.parse(event.data);
       setStatut(data.statut);
-      if (data.statut !== 'en_attente') {
+      if (data.statut !== 'en_attente_paiement') {
         source.close();
-        if (data.statut === 'reussie') {
-          refresh();
-        }
+        refresh();
       }
     };
 
@@ -112,13 +111,21 @@ const Panier = () => {
         ) : commande ? (
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-8 animate-scale-in">
             <p className="text-white text-lg">{STATUT_LABELS[statut] || 'Statut inconnu'}</p>
-            {statut === 'reussie' && (
-              <button
-                onClick={() => navigate('/accueil')}
-                className="mt-6 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl hover:from-purple-600 hover:to-pink-600 transition"
-              >
-                Retour au catalogue
-              </button>
+            {statut && statut !== 'en_attente_paiement' && (
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => navigate('/mes-commandes')}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl hover:from-purple-600 hover:to-pink-600 transition"
+                >
+                  Voir mes commandes
+                </button>
+                <button
+                  onClick={() => navigate('/accueil')}
+                  className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition"
+                >
+                  Retour au catalogue
+                </button>
+              </div>
             )}
           </div>
         ) : items.length === 0 ? (

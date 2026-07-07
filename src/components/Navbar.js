@@ -53,6 +53,13 @@ const Navbar = () => {
               </Link>
             )}
 
+            <Link
+              to="/mes-commandes"
+              className="px-3 py-2 text-sm text-white/70 hover:text-white transition hidden sm:block"
+            >
+              Mes commandes
+            </Link>
+
             <Link to="/panier" className="relative transition hover:scale-110">
               <svg className="w-6 h-6 text-white/80 hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />

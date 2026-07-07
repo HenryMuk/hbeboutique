@@ -13,7 +13,9 @@ const app = express();
 
 app.use(cors({ origin: config.corsOrigin }));
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Seules les images produit sont servies publiquement ; les factures ne sont
+// accessibles qu'via la route authentifiée /api/commandes/:id/facture.
+app.use('/uploads/produits', express.static(path.join(__dirname, '../uploads/produits')));
 
 app.use('/api/utilisateur', utilisateurRoutes);
 app.use('/api/produits', produitsRoutes);

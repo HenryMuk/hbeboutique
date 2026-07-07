@@ -6,10 +6,13 @@ import Inscription from './ecrans/Authentification/Inscription';
 import Accueil from './ecrans/Boutique/Accueil';
 import DetailProduit from './ecrans/Boutique/DetailProduit';
 import Panier from './ecrans/Boutique/Panier';
+import MesCommandes from './ecrans/Boutique/MesCommandes';
 import AdminLayout from './ecrans/Admin/AdminLayout';
 import AdminProduits from './ecrans/Admin/AdminProduits';
 import AdminUtilisateurs from './ecrans/Admin/AdminUtilisateurs';
 import AdminSignalements from './ecrans/Admin/AdminSignalements';
+import AdminCommandesValidation from './ecrans/Admin/AdminCommandesValidation';
+import AdminPaiements from './ecrans/Admin/AdminPaiements';
 import { ToastProvider } from './contexts/ToastContext';
 import { PanierProvider } from './contexts/PanierContext';
 import { ROLES, STAFF_ROLES } from './constants/roles';
@@ -20,6 +23,13 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/connexion" replace />;
   }
   return children;
+};
+
+const AdminIndexRedirect = () => {
+  const role = localStorage.getItem('role');
+  if (role === ROLES.CAISSIER) return <Navigate to="paiements" replace />;
+  if (role === ROLES.GESTIONNAIRE_BOUTIQUE || role === ROLES.ADMIN) return <Navigate to="produits" replace />;
+  return <Navigate to="/accueil" replace />;
 };
 
 const RoleRoute = ({ children, allowedRoles }) => {
@@ -68,6 +78,14 @@ function App() {
               }
             />
             <Route
+              path="/mes-commandes"
+              element={
+                <ProtectedRoute>
+                  <MesCommandes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/admin"
               element={
                 <RoleRoute allowedRoles={STAFF_ROLES}>
@@ -75,7 +93,7 @@ function App() {
                 </RoleRoute>
               }
             >
-              <Route index element={<Navigate to="produits" replace />} />
+              <Route index element={<AdminIndexRedirect />} />
               <Route
                 path="produits"
                 element={
@@ -97,6 +115,22 @@ function App() {
                 element={
                   <RoleRoute allowedRoles={[ROLES.GESTIONNAIRE_BOUTIQUE]}>
                     <AdminSignalements />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="commandes"
+                element={
+                  <RoleRoute allowedRoles={[ROLES.GESTIONNAIRE_BOUTIQUE]}>
+                    <AdminCommandesValidation />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="paiements"
+                element={
+                  <RoleRoute allowedRoles={[ROLES.CAISSIER]}>
+                    <AdminPaiements />
                   </RoleRoute>
                 }
               />

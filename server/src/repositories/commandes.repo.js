@@ -1,4 +1,5 @@
 const pool = require('../db/pool');
+const { STATUTS_COMMANDE } = require('../constants/commandeStatuts');
 
 async function createWithLignes({ utilisateurId, telephone, reference, montantTotal, lignes }) {
   const connection = await pool.getConnection();
@@ -7,8 +8,8 @@ async function createWithLignes({ utilisateurId, telephone, reference, montantTo
 
     const [result] = await connection.query(
       `INSERT INTO commandes (utilisateur_id, telephone, reference, montant_total, statut)
-       VALUES (?, ?, ?, ?, 'en_attente')`,
-      [utilisateurId, telephone, reference, montantTotal]
+       VALUES (?, ?, ?, ?, ?)`,
+      [utilisateurId, telephone, reference, montantTotal, STATUTS_COMMANDE.EN_ATTENTE_PAIEMENT]
     );
     const commandeId = result.insertId;
 
@@ -48,4 +49,81 @@ async function findLignesByCommandeId(commandeId) {
   return rows;
 }
 
-module.exports = { createWithLignes, setStatut, findById, findLignesByCommandeId };
+// Décrémente le stock de chaque ligne et fait passer la commande au statut donné,
+// dans une seule transaction : si une ligne dépasse le stock disponible, tout est annulé.
+async function validerAvecDecrementStock(commandeId, lignes, nouveauStatut) {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    for (const ligne of lignes) {
+      const [result] = await connection.query(
+        'UPDATE produits SET stock = stock - ? WHERE id = ? AND stock >= ?',
+        [ligne.quantite, ligne.produit_id, ligne.quantite]
+      );
+      if (result.affectedRows === 0) {
+        await connection.rollback();
+        return false;
+      }
+    }
+
+    await connection.query('UPDATE commandes SET statut = ? WHERE id = ?', [nouveauStatut, commandeId]);
+    await connection.commit();
+    return true;
+  } catch (err) {
+    await connection.rollback();
+    throw err;
+  } finally {
+    connection.release();
+  }
+}
+
+async function findEnAttenteValidation() {
+  const [rows] = await pool.query(
+    `SELECT c.id, c.reference, c.montant_total, c.statut, c.telephone, c.created_at, u.username, u.email
+     FROM commandes c
+     JOIN utilisateurs u ON u.id = c.utilisateur_id
+     WHERE c.statut = ?
+     ORDER BY c.created_at ASC`,
+    [STATUTS_COMMANDE.EN_ATTENTE_VALIDATION]
+  );
+  return rows;
+}
+
+async function findByUtilisateur(utilisateurId) {
+  const [rows] = await pool.query(
+    `SELECT c.id, c.reference, c.montant_total, c.statut, c.created_at,
+            f.id AS facture_id, f.numero AS facture_numero
+     FROM commandes c
+     LEFT JOIN factures f ON f.commande_id = c.id
+     WHERE c.utilisateur_id = ?
+     ORDER BY c.created_at DESC`,
+    [utilisateurId]
+  );
+  return rows;
+}
+
+async function findHistoriquePaiements() {
+  const [rows] = await pool.query(
+    `SELECT c.id, c.reference, c.montant_total, c.statut, c.created_at, u.username, u.email,
+            f.id AS facture_id, f.numero AS facture_numero
+     FROM commandes c
+     JOIN utilisateurs u ON u.id = c.utilisateur_id
+     LEFT JOIN factures f ON f.commande_id = c.id
+     WHERE c.statut IN (?, ?)
+     ORDER BY c.created_at DESC`,
+    [STATUTS_COMMANDE.VALIDEE, STATUTS_COMMANDE.REJETEE]
+  );
+  return rows;
+}
+
+module.exports = {
+  createWithLignes,
+  setStatut,
+  findById,
+  findLignesByCommandeId,
+  validerAvecDecrementStock,
+  findEnAttenteValidation,
+  findByUtilisateur,
+  findHistoriquePaiements
+};
