@@ -54,7 +54,15 @@ const MesCommandes = () => {
         <button onClick={() => navigate('/accueil')} className="text-purple-300 hover:text-purple-200 mb-6">
           &larr; Retour au catalogue
         </button>
-        <h1 className="text-3xl font-bold text-white mb-8 animate-fade-in-up">Mes commandes</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-white animate-fade-in-up">Mes commandes</h1>
+          <button
+            onClick={() => navigate('/mes-reclamations')}
+            className="px-4 py-2 text-sm bg-white/10 hover:bg-white/20 text-white rounded-xl transition"
+          >
+            Mes réclamations
+          </button>
+        </div>
 
         {loading ? (
           <div className="space-y-4">

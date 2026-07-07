@@ -16,7 +16,8 @@ const files = [
   '010_add_statut_signalements.sql',
   '011_widen_statut_commandes.sql',
   '012_create_factures.sql',
-  '013_create_livraisons.sql'
+  '013_create_livraisons.sql',
+  '014_create_tickets_sav.sql'
 ];
 
 async function tableExists(connection, tableName) {

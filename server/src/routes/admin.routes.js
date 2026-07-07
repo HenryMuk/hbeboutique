@@ -45,4 +45,7 @@ router.get('/livraisons/mes-livraisons', requireRole(ROLES.LIVRAISON), controlle
 router.patch('/livraisons/:id/en-cours', requireRole(ROLES.LIVRAISON), controller.marquerLivraisonEnCours);
 router.patch('/livraisons/:id/livree', requireRole(ROLES.LIVRAISON), controller.marquerLivraisonLivree);
 
+router.get('/sav', requireRole(ROLES.SAV), controller.listReclamations);
+router.patch('/sav/:id', requireRole(ROLES.SAV), controller.traiterReclamation);
+
 module.exports = router;

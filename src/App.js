@@ -7,6 +7,7 @@ import Accueil from './ecrans/Boutique/Accueil';
 import DetailProduit from './ecrans/Boutique/DetailProduit';
 import Panier from './ecrans/Boutique/Panier';
 import MesCommandes from './ecrans/Boutique/MesCommandes';
+import MesReclamations from './ecrans/Boutique/MesReclamations';
 import AdminLayout from './ecrans/Admin/AdminLayout';
 import AdminProduits from './ecrans/Admin/AdminProduits';
 import AdminUtilisateurs from './ecrans/Admin/AdminUtilisateurs';
@@ -16,6 +17,7 @@ import AdminPaiements from './ecrans/Admin/AdminPaiements';
 import AdminEntrepot from './ecrans/Admin/AdminEntrepot';
 import AdminLivraisons from './ecrans/Admin/AdminLivraisons';
 import AdminSuiviLivraisons from './ecrans/Admin/AdminSuiviLivraisons';
+import AdminSAV from './ecrans/Admin/AdminSAV';
 import { ToastProvider } from './contexts/ToastContext';
 import { PanierProvider } from './contexts/PanierContext';
 import { ROLES, STAFF_ROLES } from './constants/roles';
@@ -33,6 +35,7 @@ const AdminIndexRedirect = () => {
   if (role === ROLES.CAISSIER) return <Navigate to="paiements" replace />;
   if (role === ROLES.ENTREPOT) return <Navigate to="entrepot" replace />;
   if (role === ROLES.LIVRAISON) return <Navigate to="livraisons" replace />;
+  if (role === ROLES.SAV) return <Navigate to="sav" replace />;
   if (role === ROLES.GESTIONNAIRE_BOUTIQUE || role === ROLES.ADMIN) return <Navigate to="produits" replace />;
   return <Navigate to="/accueil" replace />;
 };
@@ -87,6 +90,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MesCommandes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mes-reclamations"
+              element={
+                <ProtectedRoute>
+                  <MesReclamations />
                 </ProtectedRoute>
               }
             />
@@ -160,6 +171,14 @@ function App() {
                 element={
                   <RoleRoute allowedRoles={[ROLES.GESTIONNAIRE_BOUTIQUE]}>
                     <AdminSuiviLivraisons />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="sav"
+                element={
+                  <RoleRoute allowedRoles={[ROLES.SAV]}>
+                    <AdminSAV />
                   </RoleRoute>
                 }
               />

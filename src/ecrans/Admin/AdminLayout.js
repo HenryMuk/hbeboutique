@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { to: '/admin/paiements', label: 'Paiements', roles: [ROLES.CAISSIER] },
   { to: '/admin/entrepot', label: 'Entrepôt', roles: [ROLES.ENTREPOT] },
   { to: '/admin/livraisons', label: 'Mes livraisons', roles: [ROLES.LIVRAISON] },
+  { to: '/admin/sav', label: 'Réclamations SAV', roles: [ROLES.SAV] },
   { to: '/admin/utilisateurs', label: 'Utilisateurs & rôles', roles: [ROLES.ADMIN] }
 ];
 

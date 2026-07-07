@@ -7,6 +7,7 @@ const produitsRoutes = require('./routes/produits.routes');
 const commandesRoutes = require('./routes/commandes.routes');
 const panierRoutes = require('./routes/panier.routes');
 const adminRoutes = require('./routes/admin.routes');
+const savRoutes = require('./routes/sav.routes');
 const errorHandler = require('./middleware/errorHandler.middleware');
 
 const app = express();
@@ -22,6 +23,7 @@ app.use('/api/produits', produitsRoutes);
 app.use('/api/commandes', commandesRoutes);
 app.use('/api/panier', panierRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/sav', savRoutes);
 
 app.use(errorHandler);
 

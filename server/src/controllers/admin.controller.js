@@ -2,6 +2,7 @@ const produitsRepo = require('../repositories/produits.repo');
 const utilisateursRepo = require('../repositories/utilisateurs.repo');
 const commandesService = require('../services/commandes.service');
 const livraisonsService = require('../services/livraisons.service');
+const ticketsSavService = require('../services/ticketsSav.service');
 const { ServiceError } = require('../services/errors');
 const { ROLES_LIST } = require('../constants/roles');
 
@@ -226,6 +227,25 @@ async function marquerLivraisonLivree(req, res, next) {
   }
 }
 
+async function listReclamations(req, res, next) {
+  try {
+    const reclamations = await ticketsSavService.listToutesReclamations();
+    res.status(200).json(reclamations);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function traiterReclamation(req, res, next) {
+  try {
+    const { statut, resolution } = req.body;
+    await ticketsSavService.traiterReclamation(req.params.id, statut, resolution);
+    res.status(200).json({ status: 'success' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   listProduits,
   createProduit,
@@ -246,5 +266,7 @@ module.exports = {
   listToutesLivraisons,
   listMesLivraisons,
   marquerLivraisonEnCours,
-  marquerLivraisonLivree
+  marquerLivraisonLivree,
+  listReclamations,
+  traiterReclamation
 };
