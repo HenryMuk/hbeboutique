@@ -8,6 +8,7 @@ import DetailProduit from './ecrans/Boutique/DetailProduit';
 import Panier from './ecrans/Boutique/Panier';
 import MesCommandes from './ecrans/Boutique/MesCommandes';
 import MesReclamations from './ecrans/Boutique/MesReclamations';
+import MonProfil from './ecrans/Boutique/MonProfil';
 import AdminLayout from './ecrans/Admin/AdminLayout';
 import AdminProduits from './ecrans/Admin/AdminProduits';
 import AdminUtilisateurs from './ecrans/Admin/AdminUtilisateurs';
@@ -98,6 +99,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MesReclamations />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mon-profil"
+              element={
+                <ProtectedRoute>
+                  <MonProfil />
                 </ProtectedRoute>
               }
             />

@@ -40,4 +40,13 @@ async function renvoyerOtp(req, res, next) {
   }
 }
 
-module.exports = { inscription, connexion, verifierOtp, renvoyerOtp };
+async function moi(req, res, next) {
+  try {
+    const profil = await utilisateurService.getProfil(req.user.id);
+    res.status(200).json(profil);
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { inscription, connexion, verifierOtp, renvoyerOtp, moi };

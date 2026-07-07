@@ -69,14 +69,14 @@ const Navbar = () => {
               </span>
             </Link>
 
-            <div className="flex items-center space-x-2">
+            <Link to="/mon-profil" className="flex items-center space-x-2 hover:opacity-80 transition">
               <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-bold">{username.charAt(0).toUpperCase()}</span>
               </div>
               <span className="text-white/80 hidden md:block">
                 <span className="text-purple-300 font-medium">{username}</span>
               </span>
-            </div>
+            </Link>
 
             <button
               onClick={handleLogout}

@@ -93,4 +93,13 @@ async function renvoyerOtp({ email }) {
   }
 }
 
-module.exports = { inscription, connexion, verifierOtp, renvoyerOtp };
+async function getProfil(id) {
+  const user = await usersRepo.findById(id);
+  if (!user) {
+    throw new ServiceError('UTILISATEUR_INTROUVABLE', 404);
+  }
+  const { mdp, otp_code, otp_expiry, token, ...profil } = user;
+  return profil;
+}
+
+module.exports = { inscription, connexion, verifierOtp, renvoyerOtp, getProfil };
