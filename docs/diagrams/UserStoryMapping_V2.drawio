@@ -1,0 +1,212 @@
+<mxfile host="app.diagrams.net" version="24.0.0">
+  <diagram name="User Story Mapping V2" id="usm-v2">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="USER STORY MAPPING V2 — Numérisation Boutique (adapté)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#333333;fontStyle=1;fontSize=16;align=center;" vertex="1" parent="1">
+          <mxGeometry x="100" y="40" width="1730" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lblmvp" value="MVP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#9E9E9E;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="30" y="148" width="90" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="lblv2" value="V2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#9E9E9E;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="30" y="342" width="90" height="204" as="geometry" />
+        </mxCell>
+        <mxCell id="sep" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#9E9E9E;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="326" width="1810" height="2" as="geometry" />
+        </mxCell>
+
+        <!-- Column 0: Authentification -->
+        <mxCell id="hdr0" value="Module Authentification" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#5C6BC0;strokeColor=#3949AB;fontColor=#FFFFFF;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="140" y="100" width="190" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="m0_0" value="Inscription / Connexion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EAF6;strokeColor=#9FA8DA;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="140" y="150" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m0_1" value="Vérification des accès (par rôle)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EAF6;strokeColor=#9FA8DA;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="140" y="190" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v0_0" value="Authentification 2FA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C5CAE9;strokeColor=#7986CB;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="140" y="344" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v0_1" value="Connexion réseaux sociaux" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C5CAE9;strokeColor=#7986CB;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="140" y="384" width="190" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- Column 1: Client -->
+        <mxCell id="hdr1" value="Module Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#26A69A;strokeColor=#00897B;fontColor=#FFFFFF;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="350" y="100" width="190" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="m1_0" value="CRUD Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2F1;strokeColor=#80CBC4;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="350" y="150" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m1_1" value="Voir Profil" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2F1;strokeColor=#80CBC4;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="350" y="190" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m1_2" value="Voir Historique (commandes)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2F1;strokeColor=#80CBC4;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="350" y="230" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v1_0" value="Programme fidélité" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B2DFDB;strokeColor=#4DB6AC;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="350" y="344" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v1_1" value="Score client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B2DFDB;strokeColor=#4DB6AC;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="350" y="384" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v1_2" value="Analyse comportementale" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B2DFDB;strokeColor=#4DB6AC;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="350" y="424" width="190" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- Column 2: Catalogue -->
+        <mxCell id="hdr2" value="Module Catalogue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FB8C00;strokeColor=#EF6C00;fontColor=#FFFFFF;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="560" y="100" width="190" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="m2_0" value="Consulter catalogue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFCC80;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="150" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m2_1" value="Rechercher produit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFCC80;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="190" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m2_2" value="Ajouter au panier" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFCC80;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="230" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m2_3" value="Voir détail produit (+ stock disponible)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FFCC80;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="270" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v2_0" value="Recommandation produits" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE0B2;strokeColor=#FFB74D;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="344" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v2_1" value="Filtres avancés" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE0B2;strokeColor=#FFB74D;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="384" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v2_2" value="Avis &amp; notations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE0B2;strokeColor=#FFB74D;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="424" width="190" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- Column 3: Commandes -->
+        <mxCell id="hdr3" value="Module Commandes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EC407A;strokeColor=#D81B60;fontColor=#FFFFFF;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="770" y="100" width="190" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="m3_0" value="Passer commande (client)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#F48FB1;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="770" y="150" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m3_1" value="Valider / Rejeter commande (gest. boutique)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#F48FB1;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="770" y="190" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m3_2" value="Suivi statut (client, gest. boutique, livreur)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#F48FB1;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="770" y="230" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v3_0" value="Génération auto. échéances" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8BBD0;strokeColor=#F06292;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="770" y="344" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v3_1" value="Calendrier de livraison" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8BBD0;strokeColor=#F06292;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="770" y="384" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v3_2" value="Détection commande risquée" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8BBD0;strokeColor=#F06292;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="770" y="424" width="190" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- Column 4: Paiement -->
+        <mxCell id="hdr4" value="Module Paiement" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#43A047;strokeColor=#2E7D32;fontColor=#FFFFFF;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="980" y="100" width="190" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="m4_0" value="Simuler le paiement" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#A5D6A7;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="980" y="150" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m4_1" value="Vérifier stock &amp; générer facture" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#A5D6A7;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="980" y="190" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m4_2" value="Refuser si stock insuffisant" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#A5D6A7;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="980" y="230" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m4_3" value="Historique paiements (client, caissier)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#A5D6A7;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="980" y="270" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v4_0" value="Mobile Money" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#81C784;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="980" y="344" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v4_1" value="Paiement fractionné" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#81C784;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="980" y="384" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v4_2" value="Gestion remboursements auto" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#81C784;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="980" y="424" width="190" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- Column 5: Livraison -->
+        <mxCell id="hdr5" value="Module Livraison" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FF7043;strokeColor=#F4511E;fontColor=#FFFFFF;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="100" width="190" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="m5_0" value="Attribuer livreur (entrepôt)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBE9E7;strokeColor=#FFAB91;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="150" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m5_1" value="Suivi livraison (client, gest. boutique, livreur)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBE9E7;strokeColor=#FFAB91;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="190" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v5_0" value="Partenaire logistique externe" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#FF8A65;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="344" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v5_1" value="Optimisation des tournées" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#FF8A65;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="384" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v5_2" value="Supervision centralisée" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#FF8A65;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="424" width="190" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- Column 6: SAV -->
+        <mxCell id="hdr6" value="Module SAV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E88E5;strokeColor=#1565C0;fontColor=#FFFFFF;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="100" width="190" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="m6_0" value="Ouvrir réclamation (client, commande livrée)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#90CAF9;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="150" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m6_1" value="Traiter réclamation + détail livraison (SAV)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#90CAF9;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="190" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v6_0" value="Validation retours" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#64B5F6;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="344" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v6_1" value="Remboursement client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#64B5F6;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="384" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v6_2" value="Chatbot SAV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#64B5F6;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="424" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v6_3" value="Escalade automatique" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#64B5F6;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="464" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v6_4" value="Évaluation agents SAV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#64B5F6;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="504" width="190" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- Column 7: Admin -->
+        <mxCell id="hdr7" value="Module Admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6D4C41;strokeColor=#4E342E;fontColor=#FFFFFF;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1610" y="100" width="190" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="m7_0" value="Gestion utilisateurs &amp; rôles (7 rôles)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEBE9;strokeColor=#BCAAA4;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1610" y="150" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m7_1" value="Gestion produits (stock + image)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEBE9;strokeColor=#BCAAA4;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1610" y="190" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m7_2" value="Statistiques" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEBE9;strokeColor=#BCAAA4;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1610" y="230" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m7_3" value="Sécurité plateforme" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEBE9;strokeColor=#BCAAA4;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1610" y="270" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v7_0" value="Responsable régional" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D7CCC8;strokeColor=#A1887F;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1610" y="344" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v7_1" value="Responsable expansion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D7CCC8;strokeColor=#A1887F;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1610" y="384" width="190" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="v7_2" value="Tableaux de bord avancés" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D7CCC8;strokeColor=#A1887F;fontColor=#1A1A2E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1610" y="424" width="190" height="32" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
