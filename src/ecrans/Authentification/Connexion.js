@@ -28,7 +28,6 @@ const Connexion = () => {
       return;
     }
 
-    setLoading(true);
 
     try {
       const response = await apiFetch('/utilisateur/connexion', {
