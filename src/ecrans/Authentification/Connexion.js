@@ -28,8 +28,35 @@ const Connexion = () => {
       return;
     }
 
-    setLoading(true);
 
+    try {
+      const response = await apiFetch('/utilisateur/connexion', {
+        method: 'POST',
+        auth: false,
+        body: { email: formData.email, password: formData.password }
+      });
+
+      const { token, userId, username, role } = response;
+      localStorage.setItem('userToken', token);
+      localStorage.setItem('userId', userId.toString());
+      localStorage.setItem('username', username);
+      localStorage.setItem('role', role);
+
+      navigate('/accueil', { state: { username } });
+    } catch (err) {
+      if (err instanceof ApiError) {
+        if (err.code === 'BANNI') setError('Compte banni ! Vous ne pouvez pas vous connecter');
+        else if (err.code === 'INACTIF') setError('Compte non activé ! ');
+        else if (err.code === 'MDP_INVALIDE') setError('Mot de passe incorrect');
+        else if (err.code === 'EMAIL_INEXISTANT') setError('Cet email n\'est pas inscrit');
+        else setError('Erreur lors de la connexion');
+      } else {
+        setError('Erreur de connexion au serveur');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
