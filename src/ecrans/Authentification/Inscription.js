@@ -13,6 +13,7 @@ const Inscription = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  
   const handleChange = (e) => {
     setFormData({
       ...formData,
